@@ -20,11 +20,7 @@
     --title:#6b4a2d;
     --shadow: rgba(80,55,35,.12);
   }
-
-  *{
-    box-sizing:border-box;
-  }
-
+  *{box-sizing:border-box}
   body{
     margin:0;
     min-height:100vh;
@@ -78,24 +74,22 @@
     align-items:center;
     justify-content:center;
   }
-
   .input{
     flex:1;
-    min-width:260px;
+    min-width: 260px;
     border:2px solid var(--line);
-    background:rgba(255,255,255,.55);
-    border-radius:999px;
+    background: rgba(255,255,255,.55);
+    border-radius: 999px;
     padding:10px 14px;
     font-weight:800;
-    color:rgba(60,40,25,.95);
+    color: rgba(60,40,25,.95);
     outline:none;
     font-size:16px;
   }
-
   .btn{
     border:2px solid var(--line);
-    background:rgba(255,255,255,.45);
-    color:rgba(60,40,25,.95);
+    background: rgba(255,255,255,.45);
+    color: rgba(60,40,25,.95);
     padding:10px 14px;
     border-radius:999px;
     font-weight:900;
@@ -103,25 +97,22 @@
     user-select:none;
     white-space:nowrap;
   }
-
-  .btn:active{
-    transform:scale(.99);
-  }
+  .btn:active{transform:scale(.99)}
 
   .grid{
     flex:1;
     display:grid;
-    grid-template-columns:repeat(5, 1fr);
-    grid-template-rows:repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap:18px;
     padding:0 6px 4px;
   }
 
   .cell{
-    background:linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,248,234,.92) 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,248,234,.92) 100%);
     border:2px solid var(--line);
     border-radius:18px;
-    box-shadow:0 4px 0 var(--shadow);
+    box-shadow: 0 4px 0 var(--shadow);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -133,17 +124,15 @@
   }
 
   .free{
-    background:linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
-    border-color:rgba(120,86,55,.35);
+    background: linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
+    border-color: rgba(120,86,55,.35);
     position:relative;
   }
-
   .free .freeText{
-    font-family:"Baloo 2", "Noto Sans SC", sans-serif;
+    font-family: "Baloo 2", "Noto Sans SC", sans-serif;
     font-weight:800;
     letter-spacing:.8px;
   }
-
   .free:after{
     content:"★";
     position:absolute;
@@ -151,14 +140,11 @@
     top:10px;
     font-size:18px;
     color:#b38343;
-    transform:rotate(10deg);
+    transform: rotate(10deg);
     opacity:.9;
   }
 
-  /* 导出时隐藏输入与按钮，只输出“纯卡片” */
-  .exporting .controls{
-    display:none;
-  }
+  .exporting .controls{ display:none; }
 </style>
 </head>
 
@@ -180,6 +166,7 @@
   </div>
 
 <script>
+  // 每日必出现的11项
   const dailyItems = [
     "看arXiv",
     "运动",
@@ -194,6 +181,7 @@
     "情绪稳定",
   ];
 
+  // 随机抽取的其他项目（共23项，每天抽13项）
   const randomItems = [
     "出门",
     "正向社交",
@@ -220,98 +208,134 @@
     "学/复习",
   ];
 
-  function shuffle(arr){
-    const a = arr.slice();
+  // Seeded random number generator (mulberry32)
+  function mulberry32(seed) {
+    return function() {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
 
-    for(let i = a.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
+  // Convert date string to numeric seed
+  function dateToSeed(dateStr) {
+    let hash = 0;
+    const str = dateStr.trim().toLowerCase();
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
+  }
+
+  // Seeded shuffle
+  function shuffleWithSeed(arr, seed) {
+    const a = arr.slice();
+    const random = mulberry32(seed);
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
     }
-
     return a;
   }
 
-  function sanitizeForDisplay(raw){
-    return raw.replace(/,/g, "").trim();
+  // Pure random shuffle
+  function shuffleRandom(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
-  function render(){
+  let useRandomShuffle = false;
+
+  function render() {
     const grid = document.getElementById('grid');
     grid.innerHTML = "";
 
-    const totalCells = 24; // 25格里中间一格是 FREE SPACE，所以实际任务格是24个
-    const randomNeeded = totalCells - dailyItems.length;
+    const dateStr = inputEl.value.trim();
+    
+    // 需要24个格子（25格 - 1个FREE）
+    // 11个daily + 13个random = 24
+    const randomNeeded = 24 - dailyItems.length; // = 13
+    
+    let allItems;
 
-    const picked = shuffle([
-      ...dailyItems,
-      ...shuffle(randomItems).slice(0, randomNeeded)
-    ]);
+    if (useRandomShuffle) {
+      // 随机模式
+      const pickedRandom = shuffleRandom(randomItems).slice(0, randomNeeded);
+      allItems = shuffleRandom([...dailyItems, ...pickedRandom]);
+    } else {
+      // 日期种子模式
+      const seed = dateToSeed(dateStr || formatToday());
+      const pickedRandom = shuffleWithSeed(randomItems, seed).slice(0, randomNeeded);
+      allItems = shuffleWithSeed([...dailyItems, ...pickedRandom], seed + 1);
+    }
 
     let k = 0;
-
-    for(let i = 0; i < 25; i++){
+    for (let i = 0; i < 25; i++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
 
-      if(i === 12){
+      if (i === 12) {
         cell.classList.add('free');
         cell.innerHTML = `<div class="freeText">FREE<br>SPACE</div>`;
-      }else{
-        cell.textContent = sanitizeForDisplay(picked[k++]);
+      } else {
+        cell.textContent = allItems[k++];
       }
-
       grid.appendChild(cell);
     }
   }
 
-  function formatToday(){
+  function formatToday() {
     const d = new Date();
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const wdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-
+    const wdays  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     return `${months[d.getMonth()]} ${d.getDate()} ${wdays[d.getDay()]}`;
   }
 
   const titleEl = document.getElementById('title');
   const inputEl = document.getElementById('dateInput');
 
-  function updateTitle(){
+  function updateTitle() {
     const v = inputEl.value.trim();
     titleEl.textContent = v || " ";
     document.title = v || "Bingo";
+    useRandomShuffle = false;
+    render();
   }
 
-  async function savePNG(){
+  async function savePNG() {
     const exportArea = document.getElementById('exportArea');
     exportArea.classList.add('exporting');
-
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
     const canvas = await html2canvas(exportArea, {
-      backgroundColor:null,
-      scale:Math.max(2, window.devicePixelRatio || 1),
-      useCORS:true
+      backgroundColor: null,
+      scale: Math.max(2, window.devicePixelRatio || 1),
+      useCORS: true
     });
-
     exportArea.classList.remove('exporting');
-
-    const dateText = (inputEl.value || 'bingo')
-      .trim()
-      .replace(/[\\/:*?"<>|]/g, '-');
-
+    const dateText = (inputEl.value || 'bingo').trim().replace(/[\\/:*?"<>|]/g, '-');
     const link = document.createElement('a');
     link.download = `${dateText || 'bingo'}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   }
 
-  // 默认日期 = 今天
+  // Initialize
   inputEl.value = formatToday();
   updateTitle();
-  render();
 
   inputEl.addEventListener('input', updateTitle);
-  document.getElementById('reroll').addEventListener('click', render);
+  
+  document.getElementById('reroll').addEventListener('click', () => {
+    useRandomShuffle = true;
+    render();
+  });
+  
   document.getElementById('save').addEventListener('click', savePNG);
 </script>
 </body>
