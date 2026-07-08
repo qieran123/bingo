@@ -4,310 +4,99 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Bingo</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Noto+Sans+SC:wght@600;700;800&display=swap" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 <style>
-  :root{
-    --bg1:#f7e5c6;
-    --bg2:#ead1aa;
-    --line:#d9c3a0;
-    --ink:#1f1a14;
-    --title:#6b4a2d;
-    --shadow: rgba(80,55,35,.12);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    min-height:100vh;
-    display:grid;
-    place-items:center;
-    background:
-      radial-gradient(1200px 900px at 50% 40%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 60%),
-      radial-gradient(900px 700px at 85% 75%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 55%),
-      linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
-    font-family: "Noto Sans SC", system-ui, -apple-system, "PingFang SC","Microsoft YaHei", sans-serif;
-    color:var(--ink);
-  }
-
-  .wrap{
-    width:min(92vw, 980px);
-    aspect-ratio: 1 / 1;
-    padding:34px 28px 28px;
-  }
-
-  .card{
-    width:100%;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-  }
-
-  .titleRow{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-  }
-
-  h1{
-    margin:0;
-    text-align:center;
-    font-family: "Baloo 2", "Noto Sans SC", sans-serif;
-    font-weight:800;
-    letter-spacing:.5px;
-    color:var(--title);
-    font-size:58px;
-    line-height:1;
-    text-shadow: 0 2px 0 rgba(255,255,255,.35);
-  }
-
-  .controls{
-    width:min(760px, 100%);
-    display:flex;
-    gap:10px;
-    align-items:center;
-    justify-content:center;
-  }
-  .input{
-    flex:1;
-    min-width: 260px;
-    border:2px solid var(--line);
-    background: rgba(255,255,255,.55);
-    border-radius: 999px;
-    padding:10px 14px;
-    font-weight:800;
-    color: rgba(60,40,25,.95);
-    outline:none;
-    font-size:16px;
-  }
-  .btn{
-    border:2px solid var(--line);
-    background: rgba(255,255,255,.45);
-    color: rgba(60,40,25,.95);
-    padding:10px 14px;
-    border-radius:999px;
-    font-weight:900;
-    cursor:pointer;
-    user-select:none;
-    white-space:nowrap;
-  }
-  .btn:active{transform:scale(.99)}
-
-  .grid{
-    flex:1;
-    display:grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap:18px;
-    padding:0 6px 4px;
-  }
-
-  .cell{
-    background: linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,248,234,.92) 100%);
-    border:2px solid var(--line);
-    border-radius:18px;
-    box-shadow: 0 4px 0 var(--shadow);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:14px 10px;
-    font-weight:800;
-    font-size:26px;
-    line-height:1.15;
-  }
-
-  .center-cell{
-    background: linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
-    border-color: rgba(120,86,55,.35);
-  }
-
-  .exporting .controls{ display:none; }
+:root{--bg1:#f7e5c6;--bg2:#ead1aa;--line:#d9c3a0;--ink:#1f1a14;--title:#6b4a2d;--shadow:rgba(80,55,35,.12)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 900px at 50% 40%,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 60%),radial-gradient(900px 700px at 85% 75%,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 55%),linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);font-family:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink)}
+.wrap{width:min(92vw,980px);aspect-ratio:1/1;padding:34px 28px 28px}
+.card{width:100%;height:100%;display:flex;flex-direction:column;gap:16px}
+.titleRow{display:flex;flex-direction:column;align-items:center;gap:10px}
+h1{margin:0;text-align:center;font-family:"Baloo 2","Noto Sans SC",sans-serif;font-weight:800;letter-spacing:.5px;color:var(--title);font-size:58px;line-height:1;text-shadow:0 2px 0 rgba(255,255,255,.35)}
+.controls{display:flex;gap:10px;align-items:center;justify-content:center}
+.btn{border:2px solid var(--line);background:rgba(255,255,255,.45);color:rgba(60,40,25,.95);padding:10px 18px;border-radius:999px;font-weight:900;cursor:pointer;user-select:none;white-space:nowrap;font-size:16px}
+.btn:active{transform:scale(.99)}
+.grid{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:18px;padding:0 6px 4px}
+.cell{background:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,248,234,.92) 100%);border:2px solid var(--line);border-radius:18px;box-shadow:0 4px 0 var(--shadow);display:flex;align-items:center;justify-content:center;text-align:center;padding:14px 10px;font-weight:800;font-size:26px;line-height:1.15}
+.center-cell{background:linear-gradient(180deg,rgba(242,216,176,.95) 0%,rgba(255,248,234,.92) 100%);border-color:rgba(120,86,55,.35)}
+.exporting .controls{display:none}
 </style>
 </head>
-
 <body>
-  <div class="wrap" id="exportArea">
-    <div class="card">
-      <div class="titleRow">
-        <h1 id="title"></h1>
-
-        <div class="controls">
-          <input id="dateInput" class="input" placeholder="输入日期（例如：May 19 Tue）" />
-          <button id="reroll" class="btn">随机</button>
-          <button id="save" class="btn">保存图片</button>
-        </div>
-      </div>
-
-      <div class="grid" id="grid"></div>
-    </div>
-  </div>
-
+<div class="wrap" id="exportArea">
+<div class="card">
+<div class="titleRow">
+<h1>Bingo</h1>
+<div class="controls">
+<button id="reroll" class="btn">随机</button>
+<button id="save" class="btn">保存图片</button>
+</div>
+</div>
+<div class="grid" id="grid"></div>
+</div>
+</div>
 <script>
-  const dailyItems = [
-    "看arXiv",
-    "运动",
-    "冥想",
-    "记录今日",
-    "喝足水",
-    "吃营养补剂",
-    "阅读",
-    "护肤",
-    "练琴",
-    "按时吃饭",
-    "情绪稳定",
-  ];
+const dailyItems=["看arXiv","运动","冥想","记录今日","喝足水","吃营养补剂","阅读","护肤","练琴","按时吃饭","情绪稳定"];
+const randomItems=["出门","正向社交","做家务","写点东西","按时睡觉","按时起床","科研进展","午休","写明天todo","拍摄小确幸","听音乐","写明信片","回信","泡脚or洗澡","做饭","无外食","收信","寄信","无冲动购物","无久坐躺","快速开工","读论文","学/复习"];
 
-  const randomItems = [
-    "出门",
-    "正向社交",
-    "做家务",
-    "写点东西",
-    "按时睡觉",
-    "按时起床",
-    "科研进展",
-    "午休",
-    "写明天todo",
-    "拍摄小确幸",
-    "听音乐",
-    "写明信片",
-    "回信",
-    "泡脚or洗澡",
-    "做饭",
-    "无外食",
-    "收信",
-    "寄信",
-    "无冲动购物",
-    "无久坐躺",
-    "快速开工",
-    "读论文",
-    "学/复习",
-  ];
+function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-  function mulberry32(seed) {
-    return function() {
-      let t = seed += 0x6D2B79F5;
-      t = Math.imul(t ^ t >>> 15, t | 1);
-      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
+function getTodaySeed(){const d=new Date();return d.getFullYear()*10000+d.getMonth()*100+d.getDate()}
 
-  function dateToSeed(dateStr) {
-    let hash = 0;
-    const str = dateStr.trim().toLowerCase();
-    for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
-      hash = hash & hash;
-    }
-    return Math.abs(hash);
-  }
+function shuffleWithSeed(arr,seed){const a=arr.slice();const random=mulberry32(seed);for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-  function shuffleWithSeed(arr, seed) {
-    const a = arr.slice();
-    const random = mulberry32(seed);
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
+function shuffleRandom(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-  function shuffleRandom(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
+let useRandomShuffle=false;
 
-  let useRandomShuffle = false;
-
-  function render() {
-    const grid = document.getElementById('grid');
-    grid.innerHTML = "";
-
-    const dateStr = inputEl.value.trim();
-    const randomNeeded = 24 - dailyItems.length;
-    
-    let allItems;
-
-    if (useRandomShuffle) {
-      const pickedRandom = shuffleRandom(randomItems).slice(0, randomNeeded);
-      allItems = shuffleRandom([...dailyItems, ...pickedRandom]);
-    } else {
-      const seed = dateToSeed(dateStr || formatToday());
-      const pickedRandom = shuffleWithSeed(randomItems, seed).slice(0, randomNeeded);
-      allItems = shuffleWithSeed([...dailyItems, ...pickedRandom], seed + 1);
-    }
-
-    let k = 0;
-    for (let i = 0; i < 25; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-
-      if (i === 12) {
-        cell.classList.add('center-cell');
-      } else {
-        cell.textContent = allItems[k++];
-      }
-      grid.appendChild(cell);
-    }
-  }
-
-  function formatToday() {
-    const d = new Date();
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const wdays  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-    return `${months[d.getMonth()]} ${d.getDate()} ${wdays[d.getDay()]}`;
-  }
-
-  const titleEl = document.getElementById('title');
-  const inputEl = document.getElementById('dateInput');
-
-  function updateTitle() {
-    const v = inputEl.value.trim();
-    titleEl.textContent = v || " ";
-    document.title = v || "Bingo";
-    useRandomShuffle = false;
-    render();
-  }
-
-  async function savePNG() {
-    const exportArea = document.getElementById('exportArea');
-    exportArea.classList.add('exporting');
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const canvas = await html2canvas(exportArea, {
-      backgroundColor: null,
-      scale: Math.max(2, window.devicePixelRatio || 1),
-      useCORS: true
-    });
-    exportArea.classList.remove('exporting');
-    const dateText = (inputEl.value || 'bingo').trim().replace(/[\\/:*?"<>|]/g, '-');
-    const link = document.createElement('a');
-    link.download = `${dateText || 'bingo'}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }
-
-  inputEl.value = formatToday();
-  updateTitle();
-
-  inputEl.addEventListener('input', updateTitle);
+function render(){
+  const grid=document.getElementById('grid');
+  grid.innerHTML="";
+  const randomNeeded=24-dailyItems.length;
+  let allItems;
   
-  document.getElementById('reroll').addEventListener('click', () => {
-    useRandomShuffle = true;
-    render();
-  });
+  if(useRandomShuffle){
+    const pickedRandom=shuffleRandom(randomItems).slice(0,randomNeeded);
+    allItems=shuffleRandom([...dailyItems,...pickedRandom]);
+  }else{
+    const seed=getTodaySeed();
+    const pickedRandom=shuffleWithSeed(randomItems,seed).slice(0,randomNeeded);
+    allItems=shuffleWithSeed([...dailyItems,...pickedRandom],seed+1);
+  }
   
-  document.getElementById('save').addEventListener('click', savePNG);
+  let k=0;
+  for(let i=0;i<25;i++){
+    const cell=document.createElement('div');
+    cell.className='cell';
+    if(i===12){
+      cell.classList.add('center-cell');
+    }else{
+      cell.textContent=allItems[k++];
+    }
+    grid.appendChild(cell);
+  }
+}
+
+render();
+
+document.getElementById('reroll').addEventListener('click',()=>{useRandomShuffle=true;render()});
+
+async function savePNG(){
+  const exportArea=document.getElementById('exportArea');
+  exportArea.classList.add('exporting');
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const canvas=await html2canvas(exportArea,{backgroundColor:null,scale:Math.max(2,window.devicePixelRatio||1),useCORS:true});
+  exportArea.classList.remove('exporting');
+  const link=document.createElement('a');
+  link.download='bingo.png';
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+}
+
+document.getElementById('save').addEventListener('click',savePNG);
 </script>
 </body>
 </html>
