@@ -20,7 +20,11 @@
     --title:#6b4a2d;
     --shadow: rgba(80,55,35,.12);
   }
-  *{box-sizing:border-box}
+
+  *{
+    box-sizing:border-box;
+  }
+
   body{
     margin:0;
     min-height:100vh;
@@ -74,22 +78,24 @@
     align-items:center;
     justify-content:center;
   }
+
   .input{
     flex:1;
-    min-width: 260px;
+    min-width:260px;
     border:2px solid var(--line);
-    background: rgba(255,255,255,.55);
-    border-radius: 999px;
+    background:rgba(255,255,255,.55);
+    border-radius:999px;
     padding:10px 14px;
     font-weight:800;
-    color: rgba(60,40,25,.95);
+    color:rgba(60,40,25,.95);
     outline:none;
     font-size:16px;
   }
+
   .btn{
     border:2px solid var(--line);
-    background: rgba(255,255,255,.45);
-    color: rgba(60,40,25,.95);
+    background:rgba(255,255,255,.45);
+    color:rgba(60,40,25,.95);
     padding:10px 14px;
     border-radius:999px;
     font-weight:900;
@@ -97,22 +103,25 @@
     user-select:none;
     white-space:nowrap;
   }
-  .btn:active{transform:scale(.99)}
+
+  .btn:active{
+    transform:scale(.99);
+  }
 
   .grid{
     flex:1;
     display:grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns:repeat(5, 1fr);
+    grid-template-rows:repeat(5, 1fr);
     gap:18px;
     padding:0 6px 4px;
   }
 
   .cell{
-    background: linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,248,234,.92) 100%);
+    background:linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,248,234,.92) 100%);
     border:2px solid var(--line);
     border-radius:18px;
-    box-shadow: 0 4px 0 var(--shadow);
+    box-shadow:0 4px 0 var(--shadow);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -124,15 +133,17 @@
   }
 
   .free{
-    background: linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
-    border-color: rgba(120,86,55,.35);
+    background:linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
+    border-color:rgba(120,86,55,.35);
     position:relative;
   }
+
   .free .freeText{
-    font-family: "Baloo 2", "Noto Sans SC", sans-serif;
+    font-family:"Baloo 2", "Noto Sans SC", sans-serif;
     font-weight:800;
     letter-spacing:.8px;
   }
+
   .free:after{
     content:"★";
     position:absolute;
@@ -140,12 +151,14 @@
     top:10px;
     font-size:18px;
     color:#b38343;
-    transform: rotate(10deg);
+    transform:rotate(10deg);
     opacity:.9;
   }
 
   /* 导出时隐藏输入与按钮，只输出“纯卡片” */
-  .exporting .controls{ display:none; }
+  .exporting .controls{
+    display:none;
+  }
 </style>
 </head>
 
@@ -207,17 +220,14 @@
     "学/复习",
   ];
 
-  const itemsRaw = [
-    ...dailyItems,
-    ...randomItems,
-  ];
-
   function shuffle(arr){
     const a = arr.slice();
-    for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
+
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
     }
+
     return a;
   }
 
@@ -229,10 +239,17 @@
     const grid = document.getElementById('grid');
     grid.innerHTML = "";
 
-    const picked = shuffle(itemsRaw).slice(0, 24);
+    const totalCells = 24; // 25格里中间一格是 FREE SPACE，所以实际任务格是24个
+    const randomNeeded = totalCells - dailyItems.length;
+
+    const picked = shuffle([
+      ...dailyItems,
+      ...shuffle(randomItems).slice(0, randomNeeded)
+    ]);
+
     let k = 0;
 
-    for(let i=0;i<25;i++){
+    for(let i = 0; i < 25; i++){
       const cell = document.createElement('div');
       cell.className = 'cell';
 
@@ -242,6 +259,7 @@
       }else{
         cell.textContent = sanitizeForDisplay(picked[k++]);
       }
+
       grid.appendChild(cell);
     }
   }
@@ -249,7 +267,8 @@
   function formatToday(){
     const d = new Date();
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const wdays  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const wdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
     return `${months[d.getMonth()]} ${d.getDate()} ${wdays[d.getDay()]}`;
   }
 
@@ -269,9 +288,9 @@
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     const canvas = await html2canvas(exportArea, {
-      backgroundColor: null,
-      scale: Math.max(2, window.devicePixelRatio || 1),
-      useCORS: true
+      backgroundColor:null,
+      scale:Math.max(2, window.devicePixelRatio || 1),
+      useCORS:true
     });
 
     exportArea.classList.remove('exporting');
@@ -286,7 +305,7 @@
     link.click();
   }
 
-  // 默认日期=今天
+  // 默认日期 = 今天
   inputEl.value = formatToday();
   updateTitle();
   render();
