@@ -126,22 +126,6 @@
   .free{
     background: linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
     border-color: rgba(120,86,55,.35);
-    position:relative;
-  }
-  .free .freeText{
-    font-family: "Baloo 2", "Noto Sans SC", sans-serif;
-    font-weight:800;
-    letter-spacing:.8px;
-  }
-  .free:after{
-    content:"★";
-    position:absolute;
-    right:14px;
-    top:10px;
-    font-size:18px;
-    color:#b38343;
-    transform: rotate(10deg);
-    opacity:.9;
   }
 
   .exporting .controls{ display:none; }
@@ -258,7 +242,7 @@
 
     const dateStr = inputEl.value.trim();
     
-    // 需要24个格子（25格 - 1个FREE）
+    // 需要24个格子（25格 - 1个空白中间格）
     // 11个daily + 13个random = 24
     const randomNeeded = 24 - dailyItems.length; // = 13
     
@@ -281,8 +265,9 @@
       cell.className = 'cell';
 
       if (i === 12) {
+        // 中间格子：空白
         cell.classList.add('free');
-        cell.innerHTML = `<div class="freeText">FREE<br>SPACE</div>`;
+        // 不添加任何内容，保持空白
       } else {
         cell.textContent = allItems[k++];
       }
