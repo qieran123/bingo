@@ -123,7 +123,7 @@
     line-height:1.15;
   }
 
-  .free{
+  .center-cell{
     background: linear-gradient(180deg, rgba(242,216,176,.95) 0%, rgba(255,248,234,.92) 100%);
     border-color: rgba(120,86,55,.35);
   }
@@ -150,7 +150,6 @@
   </div>
 
 <script>
-  // 每日必出现的11项
   const dailyItems = [
     "看arXiv",
     "运动",
@@ -165,7 +164,6 @@
     "情绪稳定",
   ];
 
-  // 随机抽取的其他项目（共23项，每天抽13项）
   const randomItems = [
     "出门",
     "正向社交",
@@ -192,7 +190,6 @@
     "学/复习",
   ];
 
-  // Seeded random number generator (mulberry32)
   function mulberry32(seed) {
     return function() {
       let t = seed += 0x6D2B79F5;
@@ -202,7 +199,6 @@
     };
   }
 
-  // Convert date string to numeric seed
   function dateToSeed(dateStr) {
     let hash = 0;
     const str = dateStr.trim().toLowerCase();
@@ -213,7 +209,6 @@
     return Math.abs(hash);
   }
 
-  // Seeded shuffle
   function shuffleWithSeed(arr, seed) {
     const a = arr.slice();
     const random = mulberry32(seed);
@@ -224,7 +219,6 @@
     return a;
   }
 
-  // Pure random shuffle
   function shuffleRandom(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -241,19 +235,14 @@
     grid.innerHTML = "";
 
     const dateStr = inputEl.value.trim();
-    
-    // 需要24个格子（25格 - 1个空白中间格）
-    // 11个daily + 13个random = 24
-    const randomNeeded = 24 - dailyItems.length; // = 13
+    const randomNeeded = 24 - dailyItems.length;
     
     let allItems;
 
     if (useRandomShuffle) {
-      // 随机模式
       const pickedRandom = shuffleRandom(randomItems).slice(0, randomNeeded);
       allItems = shuffleRandom([...dailyItems, ...pickedRandom]);
     } else {
-      // 日期种子模式
       const seed = dateToSeed(dateStr || formatToday());
       const pickedRandom = shuffleWithSeed(randomItems, seed).slice(0, randomNeeded);
       allItems = shuffleWithSeed([...dailyItems, ...pickedRandom], seed + 1);
@@ -265,9 +254,7 @@
       cell.className = 'cell';
 
       if (i === 12) {
-        // 中间格子：空白
-        cell.classList.add('free');
-        // 不添加任何内容，保持空白
+        cell.classList.add('center-cell');
       } else {
         cell.textContent = allItems[k++];
       }
@@ -310,7 +297,6 @@
     link.click();
   }
 
-  // Initialize
   inputEl.value = formatToday();
   updateTitle();
 
